@@ -1,41 +1,56 @@
 import os
 from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+API_KEY = os.getenv('OPENAI_API_KEY')
 
 def speech_2_txt():
-    client = OpenAI(api_key='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')
+    client = OpenAI(api_key=API_KEY)
     origin = '/home/alpha3/Desktop/Arm_project/24-25 sem1/Final pipeline/uploads/'
     target = '/home/alpha3/Desktop/Arm_project/24-25 sem1/Final pipeline/old_files/'
     files = os.listdir(origin)
-    #print(files)
 
     for q in files:
         os.rename(origin + q, target + q)
-        #print(origin+q)
-        audio_file = target + q
-        audio_file= open(audio_file, "rb")
+        audio_file = open(target + q, "rb")
         transcription = client.audio.transcriptions.create(
-        model="whisper-1", 
-        file=audio_file
+            model="whisper-1", 
+            file=audio_file
         )
         return transcription.text
 
-def chatgpt(text):
-    file1 = open('prompt.txt','r')
-    prompt = file1.read()
-    client = OpenAI(api_key='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')
+def get_intent(text):
+    client = OpenAI(api_key=API_KEY)
+
+    prompt = """You are a voice command classifier for a robotic arm in a pharmacy.
+Given the user's spoken command, classify it into one of these intents:
+
+- "run_pipeline": If the user wants to do ANYTHING related to medicine — pick up, identify, weigh, measure, check, get, grab, place, drop, move, scan, read, or handle a medicine bottle in any way.
+- "unknown": If the command is completely unrelated to medicine or the robot arm.
+
+Reply with ONLY the intent string, nothing else. No quotes, no explanation."""
+
     response = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {"role": "system", "content": prompt},
-        {"role": "user", "content": text}
-    ]
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": text}
+        ]
     )
-    file = open('ans.py','w')
-    file.write(response.choices[0].message.content)
-    file.close()
+    return response.choices[0].message.content.strip().lower()
+
+def write_action(intent):
+    with open('ans.py', 'w') as f:
+        if "run_pipeline" in intent:
+            f.write("import identify_unkown\n\nidentify_unkown.identify_new()\n")
+            print("Action: Running full medicine pipeline")
+        else:
+            f.write("print('Command not recognized. Please try again.')\n")
+            print("Action: Command not recognized, skipping.")
 
 trans = speech_2_txt()
-print(trans)
-print("entering chatGPT")
-chatgpt(trans)
-print("ChatGPT done")
+print("You said:", trans)
+intent = get_intent(trans)
+print("Intent:", intent)
+write_action(intent)

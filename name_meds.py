@@ -1,8 +1,12 @@
 import base64
+import os
 from openai import OpenAI
 from tts2 import tts
+from dotenv import load_dotenv
+
 def name_meds():
-  client = OpenAI(api_key='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')
+  load_dotenv()
+  client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
   # Function to encode the image
   def encode_image(image_path):

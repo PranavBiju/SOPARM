@@ -36,6 +36,17 @@ while True:
             # Make sure the file is opened before recording anything:
             with sf.SoundFile(filename, mode='x', samplerate=samplerate,channels=channels, subtype=subtype) as file:
                 with sd.InputStream(samplerate=samplerate,channels=channels, callback=callback):
+                    # Flush stale audio buffer for 0.5 seconds
+                    import time as _time
+                    flush_end = _time.time() + 0.5
+                    while _time.time() < flush_end:
+                        try:
+                            q.get(timeout=0.05)
+                        except queue.Empty:
+                            pass
+                    # Clear any remaining stale data
+                    while not q.empty():
+                        q.get_nowait()
                     print('#' * 80)
                     print('#' * 80)
                     while monitor.get_available_devices():
