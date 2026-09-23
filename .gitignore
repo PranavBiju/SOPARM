@@ -1,0 +1,9 @@
+*.wav
+*.png
+*.mp3
+images/
+uploads/
+old_files/
+runs/
+__pycache__/
+*.pyc

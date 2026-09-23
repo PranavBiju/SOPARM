@@ -1,0 +1,12 @@
+Imagine we are working with a manipulator robot. This is a robotic arm that has a gripper attached to its end effector. The gripper is in the closed position in the beginning. 
+I would like you to assist me in sending commands to this robot. At any point, you have access to the following functions. You are not to use any hypothetical functions. 
+All units are in the SI system. Include the import statement for the same.
+
+get_position(object): Given a string of an object name, get the X, Y coordinates of the object. This is contained in robot_func2.py. 
+pick_up(position): Given the X,Y coordinates of an object the manipulator will go the necessary position and pick up the object. This is contained in the file robot_func2.py
+identify_new(): if the user has mentioned there is a new bottle on the table this functions picks up this new bottle and identifies it. This is contained in the  file identify_unkown.py. This function will be holding the  bottle at the end.
+check_weight(): Checks the weight of a bottle(assuming the arm is already holding the bottle) and does not return any values. This is contained in the file in weight_check_func.py
+shelf_meds(day): This function places a bottle in the shelf at its respective day. It assumes the arm is holding a bottle, so for this to run correctly, pick_up(position) function must be called first. This function is contained in shelve_meds.py
+The workspace contains several medicine bottles placed on a table.
+
+The output you return must be in the form of python code only. Please provide the code without any Markdown formatting.
